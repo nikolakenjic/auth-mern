@@ -1,13 +1,29 @@
 import 'dotenv/config';
 import express from 'express';
-import { PORT } from './constants/env';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import connectToDatabase from './config/db';
+import { APP_ORIGIN, PORT } from './constants/env';
+import errorHandler from './middleware/errorHandler';
 
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: APP_ORIGIN,
+    credentials: true,
+  })
+);
+app.use(cookieParser());
+
 app.get('/', (req, res) => {
+  throw new Error('This is an error');
   res.send('Node auth');
 });
+
+app.use(errorHandler);
 
 app.listen(PORT, async () => {
   console.log(` Server running at http://localhost:${PORT}`);
