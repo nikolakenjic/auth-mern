@@ -7,6 +7,9 @@ import { APP_ORIGIN, PORT } from './constants/env';
 import errorHandler from './middleware/errorHandler';
 import catchErrors from './utils/catchErrors';
 
+// Routes
+import authRoutes from './routes/auth.route';
+
 const app = express();
 
 app.use(express.json());
@@ -22,10 +25,12 @@ app.use(cookieParser());
 app.get(
   '/',
   catchErrors(async (req, res, next) => {
-    throw new Error('This is an error');
+    // throw new Error('This is an error');
     res.send('Node auth');
   })
 );
+
+app.use('/auth', authRoutes);
 
 app.use(errorHandler);
 
