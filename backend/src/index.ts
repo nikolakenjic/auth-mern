@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import connectToDatabase from './config/db';
 import { APP_ORIGIN, PORT } from './constants/env';
 import errorHandler from './middleware/errorHandler';
+import catchErrors from './utils/catchErrors';
 
 const app = express();
 
@@ -18,10 +19,13 @@ app.use(
 );
 app.use(cookieParser());
 
-app.get('/', (req, res) => {
-  throw new Error('This is an error');
-  res.send('Node auth');
-});
+app.get(
+  '/',
+  catchErrors(async (req, res, next) => {
+    throw new Error('This is an error');
+    res.send('Node auth');
+  })
+);
 
 app.use(errorHandler);
 
