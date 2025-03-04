@@ -18,7 +18,7 @@ export const createAccount = async (data: CreateAccountParams) => {
   // Verify existing user doesn't exist
   const existingUser = await UserModel.exists({ email: data.email });
 
-  appAssert(!existingUser, CONFLICT, 'User already exists');
+  appAssert(!existingUser, CONFLICT, 'Email already exists');
 
   // create user
   const user = await UserModel.create({
@@ -55,7 +55,7 @@ export const createAccount = async (data: CreateAccountParams) => {
 
   // return user and tokens
   return {
-    user,
+    user: user.omitPassword(),
     accessToken,
     refreshToken,
   };
