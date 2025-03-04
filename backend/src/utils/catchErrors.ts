@@ -4,7 +4,7 @@ type AsyncController = (
   req: Request,
   res: Response,
   next: NextFunction
-) => Promise<void>;
+) => Promise<Response | void>;
 
 const catchErrors =
   (controller: AsyncController): AsyncController =>
