@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import catchErrors from '../utils/catchErrors';
+import catchAsync from '../utils/catchAsync';
 import { createAccount } from '../services/auth.service';
 import { CREATED } from '../constants/http';
 import { setAuthCookies } from '../utils/cookies';
@@ -16,7 +16,7 @@ const registerSchema = z
     path: ['confirmPassword'],
   });
 
-export const registerHandler = catchErrors(async (req, res, next) => {
+export const registerHandler = catchAsync(async (req, res, next) => {
   // validate request
   const request = registerSchema.parse({
     ...req.body,

@@ -6,7 +6,7 @@ type AsyncController = (
   next: NextFunction
 ) => Promise<Response | void>;
 
-const catchErrors =
+const catchAsync =
   (controller: AsyncController): AsyncController =>
   async (req, res, next) => {
     try {
@@ -16,4 +16,4 @@ const catchErrors =
     }
   };
 
-export default catchErrors;
+export default catchAsync;
