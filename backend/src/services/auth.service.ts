@@ -3,11 +3,16 @@ import VerificationCodeTypes from '../constants/verificationCodeTypes';
 import SessionModel from '../models/session.model';
 import UserModel from '../models/user.model';
 import VerificationCodeModel from '../models/verificationCode.mode;';
-import { oneYearFromNow } from '../utils/date';
+import { ONE_DAY_MS, oneYearFromNow, thirtyDaysFromNow } from '../utils/date';
 import { JWT_REFRESH_SECRET, JWT_SECRET } from '../constants/env';
 import appAssert from '../utils/appAssert';
 import { CONFLICT, UNAUTHORIZED } from '../constants/http';
-import { refreshTokenSignOptions, signToken } from '../utils/jwt';
+import {
+  RefreshTokenPayload,
+  refreshTokenSignOptions,
+  signToken,
+  verifyToken,
+} from '../utils/jwt';
 
 type AuthParams = {
   email: string;
@@ -82,24 +87,58 @@ export const loginUser = async ({ email, password, userAgent }: AuthParams) => {
   };
 
   // sign access token and refresh token
-  const refreshToken = jwt.sign(sessionInfo, JWT_REFRESH_SECRET, {
-    audience: ['user'],
-    expiresIn: '30d',
-  });
+  const refreshToken = signToken(sessionInfo, refreshTokenSignOptions);
 
-  const accessToken = jwt.sign(
-    { ...sessionInfo, userId: user._id },
-    JWT_SECRET,
-    {
-      audience: ['user'],
-      expiresIn: '15m',
-    }
-  );
+  const accessToken = signToken({ ...sessionInfo, userId: user._id });
 
   // return user and tokens
   return {
     user: user.omitPassword(),
     accessToken,
     refreshToken,
+  };
+};
+
+export const refreshUserAccessToken = async (refreshToken: string) => {
+  const { payload } = verifyToken<RefreshTokenPayload>(refreshToken, {
+    secret: refreshTokenSignOptions.secret,
+  });
+  appAssert(payload, UNAUTHORIZED, 'Invalid refresh token');
+
+  const session = await SessionModel.findById(payload.sessionId);
+  const now = Date.now();
+  appAssert(
+    session && session.expiresAt.getTime() > now,
+    UNAUTHORIZED,
+    'Session expired'
+  );
+
+  // Refresh the session if the expires in the next 24 hours
+  const sessionNeedsRefresh = session.expiresAt.getTime() - now < ONE_DAY_MS;
+
+  if (sessionNeedsRefresh) {
+    session.expiresAt = thirtyDaysFromNow();
+    await session.save();
+  }
+
+  // New refresh and access tokens
+  const newRefreshToken = sessionNeedsRefresh
+    ? signToken(
+        {
+          sessionId: session._id,
+        },
+        refreshTokenSignOptions
+      )
+    : undefined;
+
+  const accessToken = signToken({
+    userId: session.userId,
+    sessionId: session._id,
+  });
+
+  // Return new tokens
+  return {
+    accessToken,
+    newRefreshToken,
   };
 };
