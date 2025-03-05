@@ -7,6 +7,7 @@ import { oneYearFromNow } from '../utils/date';
 import { JWT_REFRESH_SECRET, JWT_SECRET } from '../constants/env';
 import appAssert from '../utils/appAssert';
 import { CONFLICT, UNAUTHORIZED } from '../constants/http';
+import { refreshTokenSignOptions, signToken } from '../utils/jwt';
 
 type AuthParams = {
   email: string;
@@ -26,32 +27,31 @@ export const createAccount = async (data: AuthParams) => {
     password: data.password,
   });
 
+  const userId = user._id;
+
   // create verification code
   const verificationCode = await VerificationCodeModel.create({
-    userId: user._id,
+    userId,
     type: VerificationCodeTypes.EmailVerification,
     expiresAt: oneYearFromNow(),
   });
 
   // send verification email
+  // to do send verification email
+
   // create session
   const session = await SessionModel.create({
-    userId: user._id,
+    userId,
     userAgent: data.userAgent,
   });
 
   // sign access token and refresh token
-  const refreshToken = jwt.sign(
+  const refreshToken = signToken(
     { sessionId: session._id },
-    JWT_REFRESH_SECRET,
-    { audience: ['user'], expiresIn: '30d' }
+    refreshTokenSignOptions
   );
 
-  const accessToken = jwt.sign(
-    { userId: user._id, sessionId: session._id },
-    JWT_SECRET,
-    { audience: ['user'], expiresIn: '15m' }
-  );
+  const accessToken = signToken({ userId: user._id, sessionId: session._id });
 
   // return user and tokens
   return {
