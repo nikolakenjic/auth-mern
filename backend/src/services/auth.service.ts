@@ -2,11 +2,16 @@ import jwt from 'jsonwebtoken';
 import VerificationCodeTypes from '../constants/verificationCodeTypes';
 import SessionModel from '../models/session.model';
 import UserModel from '../models/user.model';
-import VerificationCodeModel from '../models/verificationCode.mode;';
+import VerificationCodeModel from '../models/verificationCode.model';
 import { ONE_DAY_MS, oneYearFromNow, thirtyDaysFromNow } from '../utils/date';
 import { JWT_REFRESH_SECRET, JWT_SECRET } from '../constants/env';
 import appAssert from '../utils/appAssert';
-import { CONFLICT, UNAUTHORIZED } from '../constants/http';
+import {
+  CONFLICT,
+  INTERNAL_SERVER_ERROR,
+  NOT_FOUND,
+  UNAUTHORIZED,
+} from '../constants/http';
 import {
   RefreshTokenPayload,
   refreshTokenSignOptions,
@@ -140,5 +145,31 @@ export const refreshUserAccessToken = async (refreshToken: string) => {
   return {
     accessToken,
     newRefreshToken,
+  };
+};
+
+export const verifyEmail = async (code: string) => {
+  // get verification code
+  const validCode = await VerificationCodeModel.findOne({
+    _id: code,
+    type: VerificationCodeTypes.EmailVerification,
+    expiresAt: { $gt: new Date() },
+  });
+  appAssert(validCode, NOT_FOUND, 'Invalid or expired verification code');
+
+  // Update user to verified true
+  const updateUser = await UserModel.findByIdAndUpdate(
+    validCode.userId,
+    { verified: true },
+    { new: true }
+  );
+  appAssert(updateUser, INTERNAL_SERVER_ERROR, 'Failed to verify email');
+
+  // Delete verification code
+  await validCode.deleteOne();
+
+  // return value
+  return {
+    user: updateUser.omitPassword(),
   };
 };
