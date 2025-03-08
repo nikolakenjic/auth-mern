@@ -5,6 +5,7 @@ import {
   logoutHandler,
   refreshHandler,
   registerHandler,
+  resetPasswordHandler,
   sendPasswordResetHandler,
 } from '../controllers/auth.controller';
 
@@ -16,5 +17,6 @@ router.get('/refresh', refreshHandler);
 router.get('/logout', logoutHandler);
 router.get('/email/verify/:code', emailVerifyHandler);
 router.post('/password/forgot', sendPasswordResetHandler);
+router.post('/password/reset', resetPasswordHandler);
 
 export default router;
