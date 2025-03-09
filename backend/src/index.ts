@@ -6,9 +6,11 @@ import connectToDatabase from './config/db';
 import { APP_ORIGIN, PORT } from './constants/env';
 import errorHandler from './middleware/errorHandler';
 import catchAsync from './utils/catchAsync';
+import authenticate from './middleware/authenticate';
 
 // Routes
 import authRoutes from './routes/auth.route';
+import userRoutes from './routes/user.route';
 
 const app = express();
 
@@ -31,6 +33,9 @@ app.get(
 );
 
 app.use('/auth', authRoutes);
+
+// protected routes
+app.use('/user', authenticate, userRoutes);
 
 app.use(errorHandler);
 
