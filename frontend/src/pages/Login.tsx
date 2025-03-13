@@ -1,9 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -12,33 +14,79 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-      <div className="max-w-md w-full py-12 px-6 text-center">
-        <h1>Sign to your account</h1>
+      <div className="max-w-md w-full py-12 px-6">
+        <h1 className="text-3xl mb-8 text-center font-semibold">
+          Sign in to your account
+        </h1>
 
         <div className="rounded-lg bg-gray-800 shadow-lg p-8">
-          {/* Add error */}
-          <div className="p-4">
-            <form className="space-y-8">
-              <div className="flex flex-col">
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-300 mb-1 "
-                >
-                  Email
-                </label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Email"
-                  autoFocus
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
+          {/* Error message placeholder */}
+          {/* {error && <p className="text-red-500 mb-4">{error}</p>} */}
 
-              {/* Submit button */}
-              <Button onClick={handleSubmit}>Submit</Button>
-            </form>
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Email Input */}
+            <div className="flex flex-col space-y-2">
+              <label
+                htmlFor="email"
+                className="text-sm font-medium text-gray-300"
+              >
+                Email
+              </label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                autoFocus
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Password Input */}
+            <div className="flex flex-col space-y-2">
+              <label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-300"
+              >
+                Password
+              </label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Forgot Password Link */}
+            <div className="text-right text-sm">
+              <Link
+                to="/password/forgot"
+                className="text-blue-400 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            {/* Submit Button */}
+            <Button
+              disabled={!email || password.length < 6}
+              variant="secondary"
+              className="w-full py-2 text-lg font-semibold"
+            >
+              Sign In
+            </Button>
+          </form>
+
+          {/* Sign Up Link */}
+          <div className="text-center text-sm mt-6">
+            Don't have an account?{' '}
+            <Link to="/register" className="text-blue-400 hover:underline">
+              Sign up
+            </Link>
           </div>
         </div>
       </div>
