@@ -26,6 +26,7 @@ const Login = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log(email);
+    signIn({ email, password });
   };
 
   return (
@@ -94,7 +95,7 @@ const Login = () => {
               disabled={!email || password.length < 6 || isPending}
               variant="secondary"
               className="w-full py-2 text-lg font-semibold"
-              onClick={() => signIn({ email, password })}
+              // onClick={() => signIn({ email, password })}
             >
               Sign In
             </Button>
