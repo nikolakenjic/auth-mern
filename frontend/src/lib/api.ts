@@ -1,8 +1,14 @@
 import API from '@/config/apiClient';
 
-interface AuthParams {
+export interface loginParams {
   email: string;
   password: string;
 }
 
-export const login = async (data: AuthParams) => API.post('/auth/login', data);
+export interface registerParams extends loginParams {
+  confirmPassword: string;
+}
+
+export const login = async (data: loginParams) => API.post('/auth/login', data);
+export const register = async (data: registerParams) =>
+  API.post('/auth/register', data);
