@@ -1,11 +1,27 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { login } from '@/lib/api';
+import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+
+  const {
+    mutate: signIn,
+    isPending,
+    isError,
+  } = useMutation({
+    mutationFn: login,
+    onSuccess: () => {
+      navigate('/', {
+        replace: true,
+      });
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +37,9 @@ const Login = () => {
 
         <div className="rounded-lg bg-gray-800 shadow-lg p-8">
           {/* Error message placeholder */}
-          {/* {error && <p className="text-red-500 mb-4">{error}</p>} */}
+          {isError && (
+            <p className="text-red-500 mb-4">Invalid email or password</p>
+          )}
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Email Input */}
@@ -73,9 +91,10 @@ const Login = () => {
 
             {/* Submit Button */}
             <Button
-              disabled={!email || password.length < 6}
+              disabled={!email || password.length < 6 || isPending}
               variant="secondary"
               className="w-full py-2 text-lg font-semibold"
+              onClick={() => signIn({ email, password })}
             >
               Sign In
             </Button>
