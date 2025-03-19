@@ -12,3 +12,5 @@ export interface registerParams extends loginParams {
 export const login = async (data: loginParams) => API.post('/auth/login', data);
 export const register = async (data: registerParams) =>
   API.post('/auth/register', data);
+export const verifyEmail = async (code: string) =>
+  API.get(`/auth/email/verify/${code}`);
