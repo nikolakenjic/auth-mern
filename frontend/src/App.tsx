@@ -6,12 +6,13 @@ import VerifyEmail from './pages/VerifyEmail';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import AppContainer from './components/AppContainer';
+import Profile from './pages/Profile';
 
 const App = () => {
   return (
     <Routes>
       <Route path="/" element={<AppContainer />}>
-        <Route index element={<HomePage />} />
+        <Route index element={<Profile />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />

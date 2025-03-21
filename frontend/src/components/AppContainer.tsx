@@ -1,6 +1,7 @@
 import useAuth from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 import { Navigate, Outlet } from 'react-router-dom';
+import UserMenu from './UserMenu';
 
 const AppContainer = () => {
   const { user, isLoading } = useAuth();
@@ -16,7 +17,7 @@ const AppContainer = () => {
   if (user) {
     return (
       <div className="p-4 min-h-screen">
-        {/* <UserMenu /> */}
+        <UserMenu />
         <Outlet />
       </div>
     );
