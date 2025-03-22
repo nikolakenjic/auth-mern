@@ -30,3 +30,5 @@ export const resetPassword = async ({
 
 export const getUser = async () => API.get('/user');
 export const getSessions = async () => API.get('/sessions');
+export const deleteSession = async (sessionId: string) =>
+  API.delete(`/sessions/${sessionId}`);
