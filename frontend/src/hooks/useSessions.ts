@@ -1,16 +1,25 @@
 import { getSessions } from '@/lib/api';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
 export const SESSIONS = 'sessions';
 
-const useSessions = (opts = {}) => {
-  const { data: sessions = [], ...rest } = useQuery({
+export interface Session {
+  id: string;
+  name: string;
+  createdAt: string;
+  [key: string]: any;
+}
+const useSessions = (opts = {}): UseQueryResult<Session[], Error> => {
+  const query = useQuery({
     queryKey: [SESSIONS],
-    queryFn: getSessions,
+    queryFn: async (): Promise<Session[]> => {
+      const response = await getSessions();
+      return response.data;
+    },
     ...opts,
   });
 
-  return { sessions, ...rest };
+  return query;
 };
 
 export default useSessions;
