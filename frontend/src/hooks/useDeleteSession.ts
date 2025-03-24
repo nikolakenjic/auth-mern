@@ -11,7 +11,6 @@ const useDeleteSession = (
   const { mutate, isPending } = useMutation<AxiosResponse, Error, void>({
     mutationFn: () => deleteSession(sessionId),
     onSuccess: () => {
-      // Ažuriranje cache-a: uklanja iz liste obrisanu sesiju
       queryClient.setQueryData<Session[]>([SESSIONS], (cache) =>
         cache ? cache.filter((session) => session.id !== sessionId) : []
       );

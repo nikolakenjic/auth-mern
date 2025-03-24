@@ -11,8 +11,6 @@ interface ResetPasswordFormProps {
 const ResetPasswordForm = ({ code }: ResetPasswordFormProps) => {
   const [password, setPassword] = useState<string>('');
 
-  console.log(password);
-
   const {
     mutate: resetUserPassword,
     isError,

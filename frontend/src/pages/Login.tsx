@@ -25,7 +25,6 @@ const Login = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(email);
     signIn({ email, password });
   };
 
