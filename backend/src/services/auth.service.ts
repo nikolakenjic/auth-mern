@@ -30,6 +30,7 @@ import {
   getVerifyEmailTemplate,
 } from '../utils/emailTemplates';
 import { hashPassword } from '../utils/bcrypt';
+import { ResetPasswordParams } from '../types/global';
 
 type AuthParams = {
   email: string;
@@ -248,11 +249,6 @@ export const sendPasswordResetEmail = async (email: string) => {
     console.log('SendPasswordResetError:', error.message);
     return {};
   }
-};
-
-type ResetPasswordParams = {
-  password: string;
-  verificationCode: string;
 };
 
 export const resetPassword = async ({
